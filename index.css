@@ -1,0 +1,5 @@
+.board {
+  font-family: monospace;
+  background: rgb(100,230,255);
+  overflow-wrap: anywhere;
+}

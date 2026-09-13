@@ -1,0 +1,1 @@
+export const BOARD = { width: 60, height: 30 };
