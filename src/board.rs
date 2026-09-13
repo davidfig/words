@@ -58,6 +58,23 @@ impl Board {
             })
             .collect()
     }
+
+    // On OK, returns whether we have hit the end of the pages
+    #[wasm_bindgen]
+    pub fn player_text(self: &mut Board, text: String, page: usize) -> Result<bool, JsError> {
+        let place = self.width * page;
+        if place >= text.len() {
+            Err(JsError::new("out of text for page"))
+        } else {
+            for i in 0..self.width {
+                match text.chars().nth(i + place) {
+                    Some(ch) => self.put(i, self.height - 1, ch)?,
+                    None => self.put(i, self.height - 1, ' ')?,
+                };
+            }
+            Ok(place + self.width < text.len())
+        }
+    }
 }
 
 #[test]
@@ -65,4 +82,13 @@ fn test_board() {
     let mut board = Board::new(2, 2);
     assert!(board.put(1, 1, 'x').is_ok());
     assert_eq!(board.print(), "&nbsp;&nbsp;&nbsp;x".to_string());
+}
+
+#[test]
+fn test_player_text() {
+    let mut board = Board::new(2, 2);
+    assert_eq!(board.player_text("Try".into(), 0).unwrap(), true);
+    assert_eq!(board.print(), "&nbsp;&nbsp;Tr");
+    assert_eq!(board.player_text("Try".into(), 1).unwrap(), false);
+    assert_eq!(board.print(), "&nbsp;&nbsp;y&nbsp;");
 }
